@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cagões do T.I</title>
+  <style>
+    :root{
+      --bg1:#0b1220; --bg2:#0b1b2a;
+      --card: rgba(255,255,255,.10); --card2: rgba(255,255,255,.07);
+      --stroke: rgba(255,255,255,.16);
+      --text: rgba(255,255,255,.92); --muted: rgba(255,255,255,.70);
+      --accent:#7c5cff; --accent2:#25d3ff;
+      --danger:#ff4d6d; --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text); background:var(--bg1); overflow-x:hidden; }
+
+    .bg{
+      position:fixed; inset:0; z-index:-2;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(124,92,255,.35), transparent 60%),
+        radial-gradient(900px 700px at 85% 25%, rgba(37,211,255,.28), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(53,208,127,.20), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      background-size: cover; background-position:center;
+    }
+    .bg::after{
+      content:""; position:absolute; inset:-2px;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='900'><defs><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0.18'/></feComponentTransfer></filter></defs><rect width='1400' height='900' filter='url(%23n)'/></svg>");
+      opacity:.55; mix-blend-mode:soft-light; pointer-events:none;
+    }
+    .veil{ position:fixed; inset:0; z-index:-1; background:rgba(0,0,0,.25); backdrop-filter: blur(6px); pointer-events:none; }
+
+    header{
+      padding:28px 16px 14px; max-width:1100px; margin:0 auto;
+      display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    }
+    .brand{ display:flex; flex-direction:column; gap:6px; }
+    h1{ margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing:.2px; line-height:1.05; }
+    .subtitle{ color:var(--muted); font-size:14px; }
+
+    .toolbar{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+    .pill{
+      display:inline-flex; gap:10px; align-items:center;
+      background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14);
+      border-radius:999px; padding:10px 12px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .pill input{ background:transparent; border:0; outline:none; color:var(--text); width:230px; font-size:13px; }
+    .btn{
+      cursor:pointer; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.08);
+      color:var(--text); border-radius:12px; padding:10px 12px; font-weight:750;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      user-select:none; box-shadow: 0 12px 40px rgba(0,0,0,.22);
+    }
+    .btn:hover{ background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.20); }
+    .btn:active{ transform: scale(.98); }
+    .btn.primary{ background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(37,211,255,.70)); border-color: rgba(255,255,255,.22); }
+    .btn.danger{ border-color: rgba(255,77,109,.5); background: rgba(255,77,109,.12); }
+
+    main{
+      max-width:1100px; margin:0 auto; padding:14px 16px 40px;
+      display:grid; grid-template-columns: 1.1fr .9fr; gap:14px;
+    }
+    @media (max-width: 940px){ main{ grid-template-columns: 1fr; } .pill input{ width:180px; } }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--stroke); border-radius:var(--radius); box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .head{
+      padding:16px 16px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10); flex-wrap:wrap;
+    }
+    .card .head .title{ display:flex; flex-direction:column; gap:4px; }
+    .card .head h2{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .card .head .hint{ margin:0; color:var(--muted); font-size:12.5px; }
+    .card .body{ padding:14px 16px 16px; }
+
+    table{ width:100%; border-collapse:separate; border-spacing:0 10px; }
+    th{ text-align:left; font-size:12px; color: rgba(255,255,255,.72); font-weight:800; padding: 0 10px 4px; white-space:nowrap; }
+    td{
+      padding:12px 10px; background: rgba(255,255,255,.06);
+      border-top:1px solid rgba(255,255,255,.10); border-bottom:1px solid rgba(255,255,255,.10);
+      font-size:13.5px;
+    }
+    tr td:first-child{
+      border-left:1px solid rgba(255,255,255,.10);
+      border-top-left-radius:14px; border-bottom-left-radius:14px;
+      width:70px; font-weight:900; white-space:nowrap;
+    }
+    tr td:last-child{ border-right:1px solid rgba(255,255,255,.10); border-top-right-radius:14px; border-bottom-right-radius:14px; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px; font-weight:900; font-size:12px;
+      background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); white-space:nowrap;
+    }
+    .badge.gold{ background: rgba(255,214,102,.12); border-color: rgba(255,214,102,.35); }
+    .badge.silver{ background: rgba(207,220,255,.10); border-color: rgba(207,220,255,.28); }
+    .badge.bronze{ background: rgba(255,160,102,.10); border-color: rgba(255,160,102,.28); }
+
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 520px){ .grid{ grid-template-columns: 1fr; } }
+    label{ display:flex; flex-direction:column; gap:6px; font-size:12px; color: rgba(255,255,255,.80); font-weight:800; }
+    input{
+      width:100%; padding:11px 12px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.22); color:var(--text); outline:none;
+    }
+    input:focus{ border-color: rgba(124,92,255,.6); background: rgba(0,0,0,.28); }
+
+    .mini{ font-size:12px; color:var(--muted); }
+    .actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
+    .linklike{ background:transparent; border:0; color: rgba(255,255,255,.85); text-decoration: underline; cursor:pointer; font-weight:800; padding:0; }
+    .callout{
+      border:1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.18);
+      border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:10px;
+    }
+    .timer{ font-variant-numeric: tabular-nums; font-size:28px; font-weight:950; letter-spacing:.5px; }
+    .divider{ border:0; border-top:1px solid rgba(255,255,255,.10); margin:14px 0; }
+
+    footer{
+      max-width:1100px; margin:0 auto; padding:0 16px 26px;
+      color: rgba(255,255,255,.55); font-size:12px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .kbd{
+      border:1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06);
+      border-radius:9px; padding:2px 8px; font-weight:900; color: rgba(255,255,255,.75); font-size:11px;
+    }
+
+    .toast{
+      position: fixed; right:14px; bottom:14px; max-width:360px; padding:12px;
+      border-radius:14px; border:1px solid rgba(255,255,255,.16);
+      background: rgba(10,12,18,.72); box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      display:none; gap:10px; align-items:flex-start; backdrop-filter: blur(10px); z-index:50;
+    }
+    .toast.show{ display:flex; animation: pop .18s ease; }
+    @keyframes pop{ from{ transform: translateY(10px); opacity:.4 } to{ transform: translateY(0); opacity:1 } }
+    .dot{ width:10px; height:10px; border-radius:999px; margin-top:5px; background: var(--accent2); box-shadow: 0 0 0 3px rgba(37,211,255,.14); }
+    .toast b{ display:block; font-size:13px; }
+    .toast span{ display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+  </style>
+</head>
+
+<body>
+  <div class="bg" id="bg"></div>
+  <div class="veil"></div>
+
+  <header>
+    <div class="brand">
+      <h1>💩 Cagões do T.I</h1>
+      <div class="subtitle">Aperte <b>Iniciar</b>, aparece o cronômetro, depois <b>Finalizar</b> e entra no ranking.</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="pill" title="Cole uma URL de imagem para virar o fundo (opcional)">
+        <span style="font-weight:900;opacity:.85;">🖼️</span>
+        <input id="bgUrl" placeholder="URL da imagem de fundo (opcional)" />
+      </div>
+      <button class="btn" id="btnExport">Exportar CSV</button>
+      <button class="btn danger" id="btnReset">Zerar tudo</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="head">
+        <div class="title">
+          <h2>🏆 Ranking (tempo total)</h2>
+          <p class="hint">Soma as sessões por pessoa e ordena do maior para o menor.</p>
+        </div>
+        <span class="badge" id="totalSessions">0 sessões</span>
+      </div>
+      <div class="body">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nome</th><th>Tempo total</th><th>Sessões</th></tr>
+          </thead>
+          <tbody id="rankBody"></tbody>
+        </table>
+        <div class="mini">O ranking atualiza automaticamente.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="head">
+        <div class="title">
+          <h2>🧾 Registro + Cronômetro</h2>
+          <p class="hint">Digite o nome do cagão e aperte Iniciar. Depois finalize pelo botão ou pelo link.</p>
+        </div>
+        <span class="badge" id="totalTime">⏱️ 00:00:00</span>
+      </div>
+
+      <div class="body">
+        <form id="formStart">
+          <div class="grid">
+            <label>Nome do cagão
+              <input id="name" placeholder="Ex.: João" required maxlength="40" />
+            </label>
+
+            <label>Observação (opcional)
+              <input id="note" placeholder="Ex.: café, celular..." maxlength="60" />
+            </label>
+
+            <label>Horário inicial (pode editar)
+              <input id="startAt" type="datetime-local" required />
+            </label>
+
+            <label>Dica
+              <input value="Atalho: Ctrl + Enter (iniciar/finalizar)" readonly />
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="button" id="btnNowStart">Inicial = agora</button>
+            <button class="btn primary" type="submit" id="btnStart">Iniciar</button>
+          </div>
+        </form>
+
+        <div id="running" style="display:none;margin-top:12px;">
+          <div class="callout">
+            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+              <div>
+                <div class="mini">Sessão em andamento</div>
+                <div style="font-weight:950;font-size:16px;" id="runningName">—</div>
+                <div class="mini" id="runningMeta">—</div>
+              </div>
+              <div style="text-align:right;">
+                <div class="mini">Cronômetro</div>
+                <div class="timer" id="timer">00:00:00</div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+              <button class="btn" type="button" id="btnCopyLink">Copiar link de finalizar</button>
+              <a class="btn" id="finishLink" href="#finalizar">Finalizar (link)</a>
+              <button class="btn danger" type="button" id="btnCancel">Cancelar</button>
+              <button class="btn primary" type="button" id="btnFinish">Finalizar</button>
+            </div>
+
+            <div class="mini">
+              Se abrir este mesmo site com o hash <span class="kbd">#finalizar</span>, ele tenta finalizar a sessão ativa automaticamente.
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:950;letter-spacing:.2px;">📋 Sessões registradas</div>
+            <div class="mini">Pode apagar e o ranking recalcula.</div>
+          </div>
+          <button class="linklike" id="btnDemo" type="button">Inserir dados de exemplo</button>
+        </div>
+
+        <div style="overflow:auto;margin-top:8px;">
+          <table>
+            <thead>
+              <tr><th>Nome</th><th>Início</th><th>Fim</th><th>Duração</th><th>Obs.</th><th></th></tr>
+            </thead>
+            <tbody id="sessionsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Feito para zoeira — mas com cronômetro e ranking de verdade 😄</div>
+    <div>Salvar: tudo fica no navegador (localStorage).</div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <div class="dot"></div>
+    <div><b id="toastTitle">Ok</b><span id="toastMsg">Mensagem</span></div>
+  </div>
+
+<script>
+  const STORAGE_KEY = "cagoes_ti_records_v2";
+  const ACTIVE_KEY  = "cagoes_ti_active_v2";
+  const BG_KEY      = "cagoes_ti_bgurl_v2";
+
+  let records = [];
+  let active = null;
+  let timerHandle = null;
+  const el = (id) => document.getElementById(id);
+
+  function uid(){ return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16); }
+
+  function toast(title, msg){
+    el("toastTitle").textContent = title;
+    el("toastMsg").textContent = msg;
+    const t = el("toast");
+    t.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(()=> t.classList.remove("show"), 2600);
+  }
+
+  function pad(n){ return String(n).padStart(2,"0"); }
+  function fmtDateTime(ms){
+    const d = new Date(ms);
+    return d.toLocaleString("pt-BR", { dateStyle:"short", timeStyle:"short" });
+  }
+  function fmtDuration(ms){
+    const s = Math.floor(ms/1000);
+    const hh = Math.floor(s/3600);
+    const mm = Math.floor((s%3600)/60);
+    const ss = s%60;
+    return `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+  }
+  function setNow(input){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const MM = pad(d.getMonth()+1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    input.value = `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      records = raw ? JSON.parse(raw) : [];
+      if(!Array.isArray(records)) records = [];
+    }catch{ records = []; }
+
+    try{
+      const rawA = localStorage.getItem(ACTIVE_KEY);
+      active = rawA ? JSON.parse(rawA) : null;
+      if(active && (!active.id || !active.name || !active.start)) active = null;
+    }catch{ active = null; }
+
+    const bg = localStorage.getItem(BG_KEY) || "";
+    el("bgUrl").value = bg;
+    applyBg(bg);
+
+    setNow(el("startAt"));
+    renderAll();
+
+    if(location.hash === "#finalizar"){
+      setTimeout(()=> tryAutoFinalize(), 50);
+    }
+  }
+
+  function saveRecords(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    renderAll();
+  }
+  function saveActive(){
+    if(active) localStorage.setItem(ACTIVE_KEY, JSON.stringify(active));
+    else localStorage.removeItem(ACTIVE_KEY);
+    renderActiveUI();
+  }
+
+  function computeTotals(){
+    const map = {};
+    for(const r of records){
+      const dur = Math.max(0, r.end - r.start);
+      const key = (r.name || "").trim().toLowerCase();
+      if(!key) continue;
+      if(!map[key]) map[key] = { name: r.name.trim(), total: 0, count: 0 };
+      map[key].total += dur;
+      map[key].count += 1;
+    }
+    const arr = Object.values(map);
+    arr.sort((a,b)=> b.total - a.total);
+    return arr;
+  }
+
+  function renderRanking(){
+    const totals = computeTotals();
+    const tbody = el("rankBody");
+    tbody.innerHTML = "";
+    el("totalSessions").textContent = `${records.length} sessão${records.length===1?"":"ões"}`;
+
+    const totalMs = totals.reduce((acc,x)=> acc + x.total, 0);
+    el("totalTime").textContent = `⏱️ ${fmtDuration(totalMs)}`;
+
+    if(totals.length === 0){
+      tbody.innerHTML = `
+        <tr><td colspan="4" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:14px;">
+          Nenhum registro ainda. Inicie uma sessão ao lado 👈
+        </td></tr>`;
+      return;
+    }
+
+    totals.forEach((p, idx)=>{
+      const medal =
+        idx===0 ? `<span class="badge gold">🥇 1º</span>` :
+        idx===1 ? `<span class="badge silver">🥈 2º</span>` :
+        idx===2 ? `<span class="badge bronze">🥉 3º</span>` :
+        `<span class="badge">#${idx+1}</span>`;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${medal}</td>
+        <td style="font-weight:950;">${escapeHtml(p.name)}</td>
+        <td style="font-weight:950;">${fmtDuration(p.total)}</td>
+        <td>${p.count}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderSessions(){
+    const tbody = el("sessionsBody");
+    tbody.innerHTML = "";
+    if(records.length === 0){
+      tbody.innerHTML = `
+        <tr><td colspan="6" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:14px;">
+          Sem sessões por enquanto.
+        </td></tr>`;
+      return;
+    }
+
+    const sorted = [...records].sort((a,b)=> b.start - a.start);
+    for(const r of sorted){
+      const dur = Math.max(0, r.end - r.start);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="font-weight:950;">${escapeHtml(r.name)}</td>
+        <td>${fmtDateTime(r.start)}</td>
+        <td>${fmtDateTime(r.end)}</td>
+        <td style="font-weight:950;">${fmtDuration(dur)}</td>
+        <td>${escapeHtml(r.note || "")}</td>
+        <td style="text-align:right;">
+          <button class="btn danger" style="padding:8px 10px;border-radius:12px;" data-del="${r.id}">Apagar</button>
+        </td>`;
+      tbody.appendChild(tr);
+    }
+
+    tbody.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-del");
+        records = records.filter(x => x.id !== id);
+        saveRecords();
+        toast("Removido", "Sessão apagada e ranking recalculado.");
+      });
+    });
+  }
+
+  function startTimerLoop(){
+    stopTimerLoop();
+    timerHandle = setInterval(()=>{
+      if(!active) return;
+      el("timer").textContent = fmtDuration(Math.max(0, Date.now() - active.start));
+    }, 250);
+  }
+  function stopTimerLoop(){
+    if(timerHandle){ clearInterval(timerHandle); timerHandle = null; }
+  }
+
+  function renderActiveUI(){
+    const running = el("running");
+    const form = el("formStart");
+
+    if(active){
+      running.style.display = "block";
+      form.style.display = "none";
+      el("runningName").textContent = `💩 ${active.name}`;
+      el("runningMeta").textContent = `Início: ${fmtDateTime(active.start)}${active.note ? " • " + active.note : ""}`;
+
+      const link = `${location.origin}${location.pathname}#finalizar`;
+      el("btnCopyLink").onclick = async ()=>{
+        try{ await navigator.clipboard.writeText(link); toast("Copiado", "Link de finalizar copiado."); }
+        catch{ prompt("Copie o link:", link); }
+      };
+
+      startTimerLoop();
+    }else{
+      running.style.display = "none";
+      form.style.display = "block";
+      stopTimerLoop();
+      el("timer").textContent = "00:00:00";
+    }
+  }
+
+  el("formStart").addEventListener("submit", (e)=>{
+    e.preventDefault();
+    if(active){ toast("Já tá rolando", "Finalize ou cancele a sessão atual."); return; }
+
+    const name = el("name").value.trim();
+    const note = el("note").value.trim();
+    const startVal = el("startAt").value;
+    const start = startVal ? new Date(startVal).getTime() : NaN;
+
+    if(!name){ toast("Ops", "Informe o nome do cagão."); el("name").focus(); return; }
+    if(!Number.isFinite(start)){ toast("Ops", "Preencha o horário inicial."); return; }
+    if(start > Date.now() + 60_000){ toast("Ops", "Horário inicial no futuro."); return; }
+
+    active = { id: uid(), name, start, note };
+    saveActive();
+    toast("Iniciado", "Cronômetro rodando! 🚽");
+  });
+
+  function finalizeSession(){
+    if(!active){ toast("Nada para finalizar", "Nenhuma sessão ativa."); return; }
+    const end = Date.now();
+    if(end <= active.start){ toast("Ops", "Tempo inválido (fim <= início)."); return; }
+    records.push({ id: uid(), name: active.name, start: active.start, end, note: active.note || "" });
+    active = null;
+    saveActive();
+    saveRecords();
+    toast("Finalizado", "Entrou no ranking! 🏆");
+  }
+
+  function tryAutoFinalize(){
+    if(active){ finalizeSession(); history.replaceState(null, "", location.pathname + location.search); }
+    else{ toast("Sem sessão ativa", "Inicie antes de finalizar."); history.replaceState(null, "", location.pathname + location.search); }
+  }
+
+  el("btnFinish").addEventListener("click", finalizeSession);
+  el("btnCancel").addEventListener("click", ()=>{
+    if(!active) return;
+    if(!confirm("Cancelar a sessão ativa? (não entra no ranking)")) return;
+    active = null;
+    saveActive();
+    toast("Cancelado", "Sessão cancelada.");
+  });
+
+  el("btnNowStart").addEventListener("click", ()=> setNow(el("startAt")));
+
+  document.addEventListener("keydown", (e)=>{
+    if(e.ctrlKey && e.key === "Enter"){
+      if(active) finalizeSession();
+      else el("formStart").requestSubmit();
+    }
+  });
+
+  el("btnReset").addEventListener("click", ()=>{
+    if(!confirm("Zerar TODOS os registros e a sessão ativa?")) return;
+    records = []; active = null;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(ACTIVE_KEY);
+    saveActive(); saveRecords();
+    toast("Zerado", "Tudo limpo.");
+  });
+
+  el("btnDemo").addEventListener("click", ()=>{
+    const base = Date.now();
+    const mins = (m)=> m*60*1000;
+    const mk = (name, startAgoMin, durMin, note="") => ({
+      id: uid(), name,
+      start: base - mins(startAgoMin),
+      end: base - mins(startAgoMin - durMin),
+      note
+    });
+    records.push(
+      mk("Caio", 180, 14, "só um minutinho"),
+      mk("João", 240, 22, "telefone"),
+      mk("Maria", 60, 9, "café"),
+      mk("Caio", 30, 11, "voltei"),
+      mk("João", 20, 6, "parte 2")
+    );
+    saveRecords();
+    toast("Demo", "Dados de exemplo inseridos.");
+  });
+
+  el("btnExport").addEventListener("click", ()=>{
+    if(records.length === 0){ toast("Nada pra exportar", "Adicione 1 sessão."); return; }
+    const header = ["nome","inicio","fim","duracao","observacao"];
+    const lines = [header.join(",")];
+    for(const r of records){
+      const dur = Math.max(0, r.end - r.start);
+      lines.push([
+        `"${String(r.name).replaceAll('"','""')}"`,
+        `"${new Date(r.start).toISOString()}"`,
+        `"${new Date(r.end).toISOString()}"`,
+        `"${fmtDuration(dur)}"`,
+        `"${String(r.note||"").replaceAll('"','""')}"`
+      ].join(","));
+    }
+    const blob = new Blob([lines.join("\n")], { type:"text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "cagoes-do-ti.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast("Exportado", "CSV baixado.");
+  });
+
+  el("bgUrl").addEventListener("change", ()=>{
+    const url = el("bgUrl").value.trim();
+    localStorage.setItem(BG_KEY, url);
+    applyBg(url);
+    toast("Fundo atualizado", url ? "Imagem aplicada." : "Voltou pro padrão.");
+  });
+
+  function applyBg(url){
+    const bg = el("bg");
+    if(!url){ bg.style.backgroundImage = ""; return; }
+    bg.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.65)), url('${url}')`;
+    bg.style.backgroundSize = "cover";
+    bg.style.backgroundPosition = "center";
+  }
+
+  function renderAll(){
+    renderRanking(); renderSessions(); renderActiveUI();
+  }
+
+  window.addEventListener("hashchange", ()=>{
+    if(location.hash === "#finalizar"){ tryAutoFinalize(); }
+  });
+
+  load();
+</script>
+</body>
+</html>
+  
